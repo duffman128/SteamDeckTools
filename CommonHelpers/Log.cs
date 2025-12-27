@@ -28,7 +28,7 @@ namespace CommonHelpers
             var build = Instance.IsDEBUG ? "debug" : "release";
             var deploy = File.Exists("Uninstall.exe") ? "setup" : "zip";
 
-            o.BeforeSend += Sentry_BeforeSend;
+            o.SetBeforeSend(Sentry_BeforeSend);
             o.Dsn = Log.SENTRY_DSN;
             o.TracesSampleRate = 1.0;
             o.IsGlobalModeEnabled = true;

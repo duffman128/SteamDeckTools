@@ -1,5 +1,4 @@
 ﻿using LibreHardwareMonitor.Hardware;
-using LibreHardwareMonitor.Hardware.CPU;
 using Microsoft.VisualBasic.Devices;
 using System;
 using System.Collections.Generic;
