@@ -37,7 +37,7 @@ namespace CommonHelpers
                     return false;
 
                 byte[] buffer = new byte[size];
-                mmvStream.Read(buffer, 0, buffer.Length);
+                mmvStream.ReadExactly(buffer, 0, buffer.Length);
 
                 var handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
                 try

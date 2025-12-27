@@ -22,9 +22,9 @@ namespace PowerControl.Menu
 
         public event Action<MenuItemWithOptions, String?, String> ValueChanged;
 
-        private System.Windows.Forms.Timer delayTimer = new System.Windows.Forms.Timer();
+        private System.Windows.Forms.Timer _delayTimer = new System.Windows.Forms.Timer();
         private ToolStripMenuItem toolStripItem = new ToolStripMenuItem();
-        private bool runAfterApply = false;
+        private bool _runAfterApply = false;
 
         public MenuItemWithOptions()
         {
@@ -32,10 +32,10 @@ namespace PowerControl.Menu
 
             ValueChanged += delegate { };
 
-            delayTimer.Tick += delegate (object? sender, EventArgs e)
+            _delayTimer.Tick += delegate (object? sender, EventArgs e)
             {
-                if (delayTimer != null)
-                    delayTimer.Stop();
+                if (_delayTimer != null)
+                    _delayTimer.Stop();
 
                 FinalizeSet();
             };
@@ -84,11 +84,11 @@ namespace PowerControl.Menu
 
         public void Set(String value, bool immediate, bool refresh)
         {
-            if (delayTimer != null)
-                delayTimer.Stop();
+            if (_delayTimer != null)
+                _delayTimer.Stop();
 
             SelectedOption = value;
-            runAfterApply = refresh;
+            _runAfterApply = refresh;
 
             if (ApplyDelay == 0 || immediate)
             {
@@ -96,8 +96,8 @@ namespace PowerControl.Menu
                 return;
             }
 
-            delayTimer.Interval = ApplyDelay > 0 ? ApplyDelay : 1;
-            delayTimer.Enabled = true;
+            _delayTimer.Interval = ApplyDelay > 0 ? ApplyDelay : 1;
+            _delayTimer.Enabled = true;
         }
 
         private void FinalizeSet()

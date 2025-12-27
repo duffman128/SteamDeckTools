@@ -28,7 +28,7 @@ namespace ExternalHelpers
         public string NameOf { get; set; }
         public string Description { get; set; }
 
-        public StartupManager(string name, string description = null)
+        public StartupManager(string name, string? description = null)
         {
             NameOf = name;
             if (description != null)
@@ -46,7 +46,7 @@ namespace ExternalHelpers
             {
                 IsAvailable = true;
 
-                Task task = GetTask();
+                Task? task = GetTask();
                 if (task != null)
                 {
                     foreach (Action action in task.Definition.Actions)
@@ -63,9 +63,9 @@ namespace ExternalHelpers
             {
                 try
                 {
-                    using (RegistryKey registryKey = Registry.CurrentUser.OpenSubKey(RegistryPath))
+                    using (RegistryKey? registryKey = Registry.CurrentUser.OpenSubKey(RegistryPath))
                     {
-                        string value = (string)registryKey?.GetValue(NameOf);
+                        string? value = (string?)registryKey?.GetValue(NameOf);
 
                         if (value != null)
                             _startup = value == Application.ExecutablePath;
@@ -150,7 +150,7 @@ namespace ExternalHelpers
             }
         }
 
-        private Task GetTask()
+        private Task? GetTask()
         {
             try
             {
@@ -185,7 +185,7 @@ namespace ExternalHelpers
 
         private void DeleteTask()
         {
-            Task task = GetTask();
+            Task? task = GetTask();
             task?.Folder.DeleteTask(task.Name, false);
         }
 

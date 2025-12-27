@@ -26,8 +26,8 @@ namespace ExternalHelpers
             var c = new KeyGestureConverter();
             foreach (var gesture in aKeyGestureString.Split(","))
             {
-                KeyGesture aKeyGesture = (KeyGesture)c.ConvertFrom(gesture);
-                if (RegisterHotKey(aKeyGesture.Modifiers, aKeyGesture.Key, aAction, repeat))
+                KeyGesture? aKeyGesture = (KeyGesture?)c.ConvertFrom(gesture);
+                if (aKeyGesture is not null && RegisterHotKey(aKeyGesture.Modifiers, aKeyGesture.Key, aAction, repeat))
                     success = true;
             }
             return success;

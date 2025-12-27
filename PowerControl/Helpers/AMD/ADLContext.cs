@@ -41,17 +41,20 @@ namespace PowerControl.Helpers.AMD
         {
             get
             {
-                foreach (var adapter in AdapterInfos)
+                if (AdapterInfos is not null)
                 {
-                    if (adapter.Present == 0)
-                        continue;
-
-                    foreach (var display in GetDisplayInfos(adapter.AdapterIndex))
+                    foreach (var adapter in AdapterInfos)
                     {
-                        if ((display.DisplayInfoValue & ADL.ADL_DISPLAY_DISPLAYINFO_DISPLAYCONNECTED) != ADL.ADL_DISPLAY_DISPLAYINFO_DISPLAYCONNECTED)
+                        if (adapter.Present == 0)
                             continue;
 
-                        yield return display;
+                        foreach (var display in GetDisplayInfos(adapter.AdapterIndex))
+                        {
+                            if ((display.DisplayInfoValue & ADL.ADL_DISPLAY_DISPLAYINFO_DISPLAYCONNECTED) != ADL.ADL_DISPLAY_DISPLAYINFO_DISPLAYCONNECTED)
+                                continue;
+
+                            yield return display;
+                        }
                     }
                 }
             }

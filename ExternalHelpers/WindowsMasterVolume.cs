@@ -26,7 +26,7 @@ namespace PowerControl.Helpers
         /// <returns>-1 in case of an error, if successful the value will be between 0 and 100</returns>
         public static int GetMasterVolume()
         {
-            IAudioEndpointVolume masterVol = null;
+            IAudioEndpointVolume? masterVol = null;
             try
             {
                 masterVol = GetMasterVolumeObject();
@@ -53,7 +53,7 @@ namespace PowerControl.Helpers
         /// <returns>false if not muted, true if volume is muted</returns>
         public static bool GetMasterVolumeMute()
         {
-            IAudioEndpointVolume masterVol = null;
+            IAudioEndpointVolume? masterVol = null;
             try
             {
                 masterVol = GetMasterVolumeObject();
@@ -77,7 +77,7 @@ namespace PowerControl.Helpers
         /// <param name="newLevel">Value between 0 and 100 indicating the desired scalar value of the volume</param>
         public static void SetMasterVolume(int newLevel)
         {
-            IAudioEndpointVolume masterVol = null;
+            IAudioEndpointVolume? masterVol = null;
             try
             {
                 masterVol = GetMasterVolumeObject();
@@ -101,7 +101,7 @@ namespace PowerControl.Helpers
         /// <returns>the new volume level assigned</returns>
         public static float StepMasterVolume(float stepAmount)
         {
-            IAudioEndpointVolume masterVol = null;
+            IAudioEndpointVolume? masterVol = null;
             try
             {
                 masterVol = GetMasterVolumeObject();
@@ -137,7 +137,7 @@ namespace PowerControl.Helpers
         /// <param name="isMuted">true to mute the master volume, false to unmute</param>
         public static void SetMasterVolumeMute(bool isMuted)
         {
-            IAudioEndpointVolume masterVol = null;
+            IAudioEndpointVolume? masterVol = null;
             try
             {
                 masterVol = GetMasterVolumeObject();
@@ -159,7 +159,7 @@ namespace PowerControl.Helpers
         /// <returns>the current mute state, true if the volume was muted, false if unmuted</returns>
         public static bool ToggleMasterVolumeMute()
         {
-            IAudioEndpointVolume masterVol = null;
+            IAudioEndpointVolume? masterVol = null;
             try
             {
                 masterVol = GetMasterVolumeObject();
@@ -179,10 +179,10 @@ namespace PowerControl.Helpers
             }
         }
 
-        private static IAudioEndpointVolume GetMasterVolumeObject()
+        private static IAudioEndpointVolume? GetMasterVolumeObject()
         {
-            IMMDeviceEnumerator deviceEnumerator = null;
-            IMMDevice speakers = null;
+            IMMDeviceEnumerator? deviceEnumerator = null;
+            IMMDevice? speakers = null;
             try
             {
                 deviceEnumerator = (IMMDeviceEnumerator)(new MMDeviceEnumerator());
@@ -191,7 +191,7 @@ namespace PowerControl.Helpers
                 Guid IID_IAudioEndpointVolume = typeof(IAudioEndpointVolume).GUID;
                 object o;
                 speakers.Activate(ref IID_IAudioEndpointVolume, 0, IntPtr.Zero, out o);
-                IAudioEndpointVolume masterVol = (IAudioEndpointVolume)o;
+                IAudioEndpointVolume? masterVol = (IAudioEndpointVolume?)o;
 
                 return masterVol;
             }
@@ -208,7 +208,7 @@ namespace PowerControl.Helpers
 
         public static float? GetApplicationVolume(int pid)
         {
-            ISimpleAudioVolume volume = GetVolumeObject(pid);
+            ISimpleAudioVolume? volume = GetVolumeObject(pid);
             if (volume == null)
                 return null;
 
@@ -220,7 +220,7 @@ namespace PowerControl.Helpers
 
         public static bool? GetApplicationMute(int pid)
         {
-            ISimpleAudioVolume volume = GetVolumeObject(pid);
+            ISimpleAudioVolume? volume = GetVolumeObject(pid);
             if (volume == null)
                 return null;
 
@@ -232,7 +232,7 @@ namespace PowerControl.Helpers
 
         public static void SetApplicationVolume(int pid, float level)
         {
-            ISimpleAudioVolume volume = GetVolumeObject(pid);
+            ISimpleAudioVolume? volume = GetVolumeObject(pid);
             if (volume == null)
                 return;
 
@@ -243,7 +243,7 @@ namespace PowerControl.Helpers
 
         public static void SetApplicationMute(int pid, bool mute)
         {
-            ISimpleAudioVolume volume = GetVolumeObject(pid);
+            ISimpleAudioVolume? volume = GetVolumeObject(pid);
             if (volume == null)
                 return;
 
@@ -252,12 +252,12 @@ namespace PowerControl.Helpers
             Marshal.ReleaseComObject(volume);
         }
 
-        private static ISimpleAudioVolume GetVolumeObject(int pid)
+        private static ISimpleAudioVolume? GetVolumeObject(int pid)
         {
-            IMMDeviceEnumerator deviceEnumerator = null;
-            IAudioSessionEnumerator sessionEnumerator = null;
-            IAudioSessionManager2 mgr = null;
-            IMMDevice speakers = null;
+            IMMDeviceEnumerator? deviceEnumerator = null;
+            IAudioSessionEnumerator? sessionEnumerator = null;
+            IAudioSessionManager2? mgr = null;
+            IMMDevice? speakers = null;
             try
             {
                 // get the speakers (1st render + multimedia) device
@@ -276,10 +276,10 @@ namespace PowerControl.Helpers
                 sessionEnumerator.GetCount(out count);
 
                 // search for an audio session with the required process-id
-                ISimpleAudioVolume volumeControl = null;
+                ISimpleAudioVolume? volumeControl = null;
                 for (int i = 0; i < count; ++i)
                 {
-                    IAudioSessionControl2 ctl = null;
+                    IAudioSessionControl2? ctl = null;
                     try
                     {
                         sessionEnumerator.GetSession(i, out ctl);

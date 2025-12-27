@@ -12,7 +12,7 @@ namespace CommonHelpers
         private const uint RTSSHOOKSFLAG_LIMITER_DISABLED = 4;
         private const string GLOBAL_PROFILE = "";
 
-        public static bool GetProfileProperty<T>(string propertyName, out T value)
+        public static bool GetProfileProperty<T>(string propertyName, out T? value)
         {
             var bytes = new byte[Marshal.SizeOf<T>()];
             var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
@@ -81,7 +81,7 @@ namespace CommonHelpers
         static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll", SetLastError = true)]
-        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
 
         [DllImport("RTSSHooks64.dll")]
         public static extern uint SetFlags(uint dwAND, uint dwXOR);

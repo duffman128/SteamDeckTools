@@ -11,18 +11,18 @@ namespace PerformanceOverlay
         public static readonly String TitleWithVersion = Title + " v" + System.Windows.Forms.Application.ProductVersion.ToString();
 
         Container components = new Container();
-        RTSSSharedMemoryNET.OSD? osd;
-        System.Windows.Forms.ContextMenuStrip contextMenu;
-        ToolStripMenuItem showItem;
-        System.Windows.Forms.NotifyIcon notifyIcon;
-        System.Windows.Forms.Timer osdTimer;
-        Sensors sensors = new Sensors();
-        StartupManager startupManager = new StartupManager(
+        RTSSSharedMemoryNET.OSD? _osd;
+        System.Windows.Forms.ContextMenuStrip _contextMenu;
+        ToolStripMenuItem _showItem;
+        System.Windows.Forms.NotifyIcon _notifyIcon;
+        System.Windows.Forms.Timer _osdTimer;
+        Sensors _sensors = new Sensors();
+        StartupManager _startupManager = new StartupManager(
             Title,
             "Starts Performance Overlay on Windows startup."
         );
 
-        SharedData<OverlayModeSetting> sharedData = SharedData<OverlayModeSetting>.CreateNew();
+        SharedData<OverlayModeSetting> _sharedData = SharedData<OverlayModeSetting>.CreateNew();
 
         static Controller()
         {
@@ -33,27 +33,27 @@ namespace PerformanceOverlay
         {
             Instance.OnUninstall(() =>
             {
-                startupManager.Startup = false;
+                _startupManager.Startup = false;
             });
 
-            contextMenu = new System.Windows.Forms.ContextMenuStrip(components);
+            _contextMenu = new System.Windows.Forms.ContextMenuStrip(components);
 
             SharedData_Update();
             Instance.Open(TitleWithVersion, Settings.Default.EnableKernelDrivers, "Global\\PerformanceOverlay");
             Instance.RunUpdater(TitleWithVersion);
 
             if (Instance.WantsRunOnStartup)
-                startupManager.Startup = true;
+                _startupManager.Startup = true;
 
-            var notRunningRTSSItem = contextMenu.Items.Add("&RTSS is not running");
+            var notRunningRTSSItem = _contextMenu.Items.Add("&RTSS is not running");
             notRunningRTSSItem.Enabled = false;
-            contextMenu.Opening += delegate { notRunningRTSSItem.Visible = Dependencies.EnsureRTSS(null) && !OSDHelpers.IsLoaded; };
+            _contextMenu.Opening += delegate { notRunningRTSSItem.Visible = Dependencies.EnsureRTSS(null) && !OSDHelpers.IsLoaded; };
 
-            showItem = new ToolStripMenuItem("&Show OSD");
-            showItem.Click += ShowItem_Click;
-            showItem.Checked = Settings.Default.ShowOSD;
-            contextMenu.Items.Add(showItem);
-            contextMenu.Items.Add(new ToolStripSeparator());
+            _showItem = new ToolStripMenuItem("&Show OSD");
+            _showItem.Click += ShowItem_Click;
+            _showItem.Checked = Settings.Default.ShowOSD;
+            _contextMenu.Items.Add(_showItem);
+            _contextMenu.Items.Add(new ToolStripSeparator());
             foreach (var mode in Enum.GetValues<OverlayMode>())
             {
                 var modeItem = new ToolStripMenuItem(mode.ToString());
@@ -61,58 +61,58 @@ namespace PerformanceOverlay
                 modeItem.Click += delegate
                 {
                     Settings.Default.OSDMode = mode;
-                    updateContextItems(contextMenu);
+                    updateContextItems(_contextMenu);
                 };
-                contextMenu.Items.Add(modeItem);
+                _contextMenu.Items.Add(modeItem);
             }
-            updateContextItems(contextMenu);
+            updateContextItems(_contextMenu);
 
-            contextMenu.Items.Add(new ToolStripSeparator());
+            _contextMenu.Items.Add(new ToolStripSeparator());
 
             var kernelDriversItem = new ToolStripMenuItem("Use &Kernel Drivers");
             kernelDriversItem.Click += delegate { setKernelDrivers(!Instance.UseKernelDrivers); };
-            contextMenu.Opening += delegate { kernelDriversItem.Checked = Instance.UseKernelDrivers; };
-            contextMenu.Items.Add(kernelDriversItem);
+            _contextMenu.Opening += delegate { kernelDriversItem.Checked = Instance.UseKernelDrivers; };
+            _contextMenu.Items.Add(kernelDriversItem);
 
-            contextMenu.Items.Add(new ToolStripSeparator());
+            _contextMenu.Items.Add(new ToolStripSeparator());
 
-            if (startupManager.IsAvailable)
+            if (_startupManager.IsAvailable)
             {
                 var startupItem = new ToolStripMenuItem("Run On Startup");
-                startupItem.Checked = startupManager.Startup;
+                startupItem.Checked = _startupManager.Startup;
                 startupItem.Click += delegate
                 {
-                    startupManager.Startup = !startupManager.Startup;
-                    startupItem.Checked = startupManager.Startup;
+                    _startupManager.Startup = !_startupManager.Startup;
+                    startupItem.Checked = _startupManager.Startup;
                 };
-                contextMenu.Items.Add(startupItem);
+                _contextMenu.Items.Add(startupItem);
             }
 
-            var missingRTSSItem = contextMenu.Items.Add("&Install missing RTSS");
+            var missingRTSSItem = _contextMenu.Items.Add("&Install missing RTSS");
             missingRTSSItem.Click += delegate { Dependencies.OpenLink(Dependencies.RTSSURL); };
-            contextMenu.Opening += delegate { missingRTSSItem.Visible = !Dependencies.EnsureRTSS(null); };
+            _contextMenu.Opening += delegate { missingRTSSItem.Visible = !Dependencies.EnsureRTSS(null); };
 
-            var checkForUpdatesItem = contextMenu.Items.Add("&Check for Updates");
+            var checkForUpdatesItem = _contextMenu.Items.Add("&Check for Updates");
             checkForUpdatesItem.Click += delegate { Instance.RunUpdater(TitleWithVersion, true); };
 
-            var helpItem = contextMenu.Items.Add("&Help");
+            var helpItem = _contextMenu.Items.Add("&Help");
             helpItem.Click += delegate { Dependencies.OpenLink(Dependencies.SDTURL); };
 
-            contextMenu.Items.Add(new ToolStripSeparator());
+            _contextMenu.Items.Add(new ToolStripSeparator());
 
-            var exitItem = contextMenu.Items.Add("&Exit");
+            var exitItem = _contextMenu.Items.Add("&Exit");
             exitItem.Click += ExitItem_Click;
 
-            notifyIcon = new System.Windows.Forms.NotifyIcon(components);
-            notifyIcon.Icon = WindowsDarkMode.IsDarkModeEnabled ? Resources.poll_light : Resources.poll;
-            notifyIcon.Text = TitleWithVersion;
-            notifyIcon.Visible = true;
-            notifyIcon.ContextMenuStrip = contextMenu;
+            _notifyIcon = new System.Windows.Forms.NotifyIcon(components);
+            _notifyIcon.Icon = WindowsDarkMode.IsDarkModeEnabled ? Resources.poll_light : Resources.poll;
+            _notifyIcon.Text = TitleWithVersion;
+            _notifyIcon.Visible = true;
+            _notifyIcon.ContextMenuStrip = _contextMenu;
 
-            osdTimer = new System.Windows.Forms.Timer(components);
-            osdTimer.Tick += OsdTimer_Tick;
-            osdTimer.Interval = 250;
-            osdTimer.Enabled = true;
+            _osdTimer = new System.Windows.Forms.Timer(components);
+            _osdTimer.Tick += OsdTimer_Tick;
+            _osdTimer.Interval = 250;
+            _osdTimer.Enabled = true;
 
             if (Settings.Default.ShowOSDShortcut != "")
             {
@@ -120,7 +120,7 @@ namespace PerformanceOverlay
                 {
                     Settings.Default.ShowOSD = !Settings.Default.ShowOSD;
 
-                    updateContextItems(contextMenu);
+                    updateContextItems(_contextMenu);
                 });
             }
 
@@ -134,7 +134,7 @@ namespace PerformanceOverlay
                     Settings.Default.OSDMode = values[(index + 1) % values.Count];
                     Settings.Default.ShowOSD = true;
 
-                    updateContextItems(contextMenu);
+                    updateContextItems(_contextMenu);
                 });
             }
 
@@ -157,18 +157,21 @@ namespace PerformanceOverlay
                     ((ToolStripMenuItem)item).Checked = ((OverlayMode)item.Tag == Settings.Default.OSDMode);
             }
 
-            showItem.Checked = Settings.Default.ShowOSD;
+            _showItem.Checked = Settings.Default.ShowOSD;
         }
 
         private void NotifyIcon_Click(object? sender, EventArgs e)
         {
-            ((NotifyIcon)sender).ContextMenuStrip.Show(Control.MousePosition);
+            if (sender is not null)
+            {
+                ((NotifyIcon)sender).ContextMenuStrip?.Show(Control.MousePosition);
+            }
         }
 
         private void ShowItem_Click(object? sender, EventArgs e)
         {
             Settings.Default.ShowOSD = !Settings.Default.ShowOSD;
-            updateContextItems(contextMenu);
+            updateContextItems(_contextMenu);
         }
 
         private bool AckAntiCheat()
@@ -196,29 +199,29 @@ namespace PerformanceOverlay
 
         private void SharedData_Update()
         {
-            if (sharedData.GetValue(out var value))
+            if (_sharedData.GetValue(out var value))
             {
                 if (Enum.IsDefined<OverlayMode>(value.Desired))
                 {
                     Settings.Default.OSDMode = (OverlayMode)value.Desired;
                     Settings.Default.ShowOSD = true;
-                    updateContextItems(contextMenu);
+                    updateContextItems(_contextMenu);
                 }
 
                 if (Enum.IsDefined<OverlayEnabled>(value.DesiredEnabled))
                 {
                     Settings.Default.ShowOSD = (OverlayEnabled)value.DesiredEnabled == OverlayEnabled.Yes;
-                    updateContextItems(contextMenu);
+                    updateContextItems(_contextMenu);
                 }
 
                 if (Enum.IsDefined<KernelDriversLoaded>(value.DesiredKernelDriversLoaded))
                 {
                     setKernelDrivers((KernelDriversLoaded)value.DesiredKernelDriversLoaded == KernelDriversLoaded.Yes);
-                    updateContextItems(contextMenu);
+                    updateContextItems(_contextMenu);
                 }
             }
 
-            sharedData.SetValue(new OverlayModeSetting()
+            _sharedData.SetValue(new OverlayModeSetting()
             {
                 Current = Settings.Default.OSDMode,
                 CurrentEnabled = Settings.Default.ShowOSD ? OverlayEnabled.Yes : OverlayEnabled.No,
@@ -230,37 +233,37 @@ namespace PerformanceOverlay
         {
             try
             {
-                osdTimer.Enabled = false;
+                _osdTimer.Enabled = false;
                 SharedData_Update();
             }
             finally
             {
-                osdTimer.Enabled = true;
+                _osdTimer.Enabled = true;
             }
 
             try
             {
-                notifyIcon.Text = TitleWithVersion + ". RTSS Version: " + OSD.Version;
-                notifyIcon.Icon = WindowsDarkMode.IsDarkModeEnabled ? Resources.poll_light : Resources.poll;
+                _notifyIcon.Text = TitleWithVersion + ". RTSS Version: " + OSD.Version;
+                _notifyIcon.Icon = WindowsDarkMode.IsDarkModeEnabled ? Resources.poll_light : Resources.poll;
             }
             catch
             {
-                notifyIcon.Text = TitleWithVersion + ". RTSS Not Available.";
-                notifyIcon.Icon = Resources.poll_red;
+                _notifyIcon.Text = TitleWithVersion + ". RTSS Not Available.";
+                _notifyIcon.Icon = Resources.poll_red;
                 osdReset();
                 return;
             }
 
             if (!Settings.Default.ShowOSD)
             {
-                osdTimer.Interval = 1000;
+                _osdTimer.Interval = 1000;
                 osdReset();
                 return;
             }
 
-            osdTimer.Interval = 250;
+            _osdTimer.Interval = 250;
 
-            sensors.Update();
+            _sensors.Update();
 
             var osdMode = Settings.Default.OSDMode;
 
@@ -271,21 +274,21 @@ namespace PerformanceOverlay
                     osdMode = OverlayMode.Full;
             }
 
-            var osdOverlay = Overlays.GetOSD(osdMode, sensors);
+            var osdOverlay = Overlays.GetOSD(osdMode, _sensors);
 
             try
             {
                 // recreate OSD if not index 0
                 if (OSDHelpers.OSDIndex("PerformanceOverlay") != 0)
                     osdClose();
-                if (osd == null)
-                    osd = new OSD("PerformanceOverlay");
+                if (_osd == null)
+                    _osd = new OSD("PerformanceOverlay");
 
                 uint offset = 0;
                 osdEmbedGraph(ref offset, ref osdOverlay, "[OBJ_FT_SMALL]", -8, -1, 1, 0, 50000.0f, EMBEDDED_OBJECT_GRAPH.FLAG_FRAMETIME);
                 osdEmbedGraph(ref offset, ref osdOverlay, "[OBJ_FT_LARGE]", -32, -2, 1, 0, 50000.0f, EMBEDDED_OBJECT_GRAPH.FLAG_FRAMETIME);
 
-                osd.Update(osdOverlay);
+                _osd.Update(osdOverlay);
             }
             catch (SystemException)
             {
@@ -296,8 +299,8 @@ namespace PerformanceOverlay
         {
             try
             {
-                if (osd != null)
-                    osd.Update("");
+                if (_osd != null)
+                    _osd.Update("");
             }
             catch (SystemException)
             {
@@ -308,22 +311,21 @@ namespace PerformanceOverlay
         {
             try
             {
-                if (osd != null)
-                    osd.Dispose();
-                osd = null;
+                if (_osd != null)
+                    _osd.Dispose();
+                _osd = null;
             }
             catch (SystemException)
             {
             }
         }
 
-        private uint osdEmbedGraph(ref uint offset, ref String osdOverlay, String name, int dwWidth, int dwHeight, int dwMargin, float fltMin, float fltMax, EMBEDDED_OBJECT_GRAPH dwFlags)
+        private void osdEmbedGraph(ref uint offset, ref String osdOverlay, String name, int dwWidth, int dwHeight, int dwMargin, float fltMin, float fltMax, EMBEDDED_OBJECT_GRAPH dwFlags)
         {
-            uint size = osd.EmbedGraph(offset, new float[0], 0, dwWidth, dwHeight, dwMargin, fltMin, fltMax, dwFlags);
+            uint size = _osd.EmbedGraph(offset, new float[0], 0, dwWidth, dwHeight, dwMargin, fltMin, fltMax, dwFlags);
             if (size > 0)
                 osdOverlay = osdOverlay.Replace(name, "<OBJ=" + offset.ToString("X") + ">");
             offset += size;
-            return size;
         }
 
         private void ExitItem_Click(object? sender, EventArgs e)
@@ -335,7 +337,7 @@ namespace PerformanceOverlay
         {
             components.Dispose();
             osdClose();
-            using (sensors) { }
+            using (_sensors) { }
         }
     }
 }
