@@ -50,7 +50,7 @@ namespace SteamController.Devices
         internal void Fail(bool immediately = false)
         {
             foreach (var action in AllActions)
-                action.Reset();
+                action?.Reset();
 
             // Try to re-open every MaxFailures
             failures++;
@@ -64,7 +64,7 @@ namespace SteamController.Devices
         private void BeforeUpdate(byte[] buffer)
         {
             foreach (var action in AllActions)
-                action.BeforeUpdate(buffer);
+                action?.BeforeUpdate(buffer);
         }
 
         internal void BeforeUpdate()
@@ -107,7 +107,7 @@ namespace SteamController.Devices
         internal void Update()
         {
             foreach (var action in AllActions)
-                action.Update();
+                action?.Update();
 
             try
             {

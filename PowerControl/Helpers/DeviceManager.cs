@@ -77,7 +77,7 @@ namespace PowerControl.Helpers
             return ranges;
         }
 
-        static bool CM_Get_DevNode_Property(IntPtr devInst, DEVPROPKEY propertyKey, out string result, int flags)
+        static bool CM_Get_DevNode_Property(IntPtr devInst, DEVPROPKEY propertyKey, out string? result, int flags)
         {
             result = default;
 

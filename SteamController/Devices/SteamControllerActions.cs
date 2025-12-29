@@ -16,7 +16,7 @@ namespace SteamController.Devices
             {
                 foreach (var action in AllButtons)
                 {
-                    if (action.Value)
+                    if (action is not null && action.Value)
                         yield return action;
                 }
             }
@@ -43,14 +43,17 @@ namespace SteamController.Devices
             List<string> report = new List<string>();
 
             var buttons = AllButtons.Where((button) => button.Value).Select((button) => button.Name);
-            if (buttons.Any())
+            if (buttons is not null && buttons.Any())
                 yield return String.Format("Buttons: {0}", String.Join(",", buttons));
 
             foreach (var axis in AllAxises)
             {
-                if (!axis.Active)
-                    continue;
-                yield return String.Format("Axis: {0} = {1} [Delta: {2}]", axis.Name, axis.Value, axis.Value - axis.LastValue);
+                if (axis is not null)
+                {
+                    if (!axis.Active)
+                        continue;
+                    yield return String.Format("Axis: {0} = {1} [Delta: {2}]", axis.Name, axis.Value, axis.Value - axis.LastValue);
+                }
             }
         }
     }

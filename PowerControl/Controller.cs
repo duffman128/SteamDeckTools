@@ -22,7 +22,7 @@ namespace PowerControl
         StartupManager startupManager = new StartupManager(Title);
 
         Menu.MenuRoot rootMenu = MenuStack.Root;
-        OSD osd;
+        OSD _osd;
         System.Windows.Forms.Timer osdDismissTimer;
         bool isOSDToggled = false;
 
@@ -424,12 +424,12 @@ namespace PowerControl
                 // recreate OSD if index 0
                 if (OSDHelpers.OSDIndex("Power Control") == 0 && OSD.GetOSDCount() > 1)
                     osdClose();
-                if (osd == null)
+                if (_osd == null)
                 {
-                    osd = new OSD("Power Control");
+                    _osd = new OSD("Power Control");
                     Trace.WriteLine("Show OSD");
                 }
-                osd.Update(rootMenu.Render(null));
+                _osd.Update(rootMenu.Render(null));
             }
             catch (SystemException)
             {
@@ -452,15 +452,18 @@ namespace PowerControl
         {
             try
             {
-                if (osd != null)
+                if (_osd != null)
                 {
-                    osd.Dispose();
+                    _osd.Dispose();
                     Trace.WriteLine("Close OSD");
                 }
-                osd = null;
             }
             catch (SystemException)
             {
+            }
+            finally
+            {
+                _osd = null;
             }
         }
 

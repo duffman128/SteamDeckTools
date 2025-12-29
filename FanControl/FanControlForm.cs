@@ -117,14 +117,20 @@ namespace FanControl
 
         private void FanMode_Click(object? sender, EventArgs e)
         {
-            var menuItem = (ToolStripMenuItem)sender;
-            setFanMode((FanMode)menuItem.Tag);
+            var menuItem = (ToolStripMenuItem?)sender;
+            if (menuItem is not null)
+            {
+                setFanMode((FanMode)menuItem.Tag);
+            }
         }
 
         private void fanModeSelectMenu_SelectedIndexChanged(object sender, EventArgs e)
         {
             var menuItem = (ToolStripComboBox)sender;
-            setFanMode((FanMode)menuItem.SelectedItem);
+            if (menuItem.SelectedItem is not null)
+            {
+                setFanMode((FanMode)menuItem.SelectedItem);
+            }
         }
 
         private void FanControlForm_FormClosing(object sender, FormClosingEventArgs e)

@@ -155,7 +155,7 @@ namespace CommonHelpers
 
             var osdSlot = typeof(OSD).GetField("m_osdSlot",
                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var value = osdSlot.GetValue(osd);
+            var value = osdSlot?.GetValue(osd);
             if (value is null)
                 return uint.MaxValue;
 

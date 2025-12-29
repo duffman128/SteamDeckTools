@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="CommonHelpers/CommonHelpers.csproj" />
+  <Project Path="ExternalHelpers/ExternalHelpers.csproj" />
+  <Project Path="FanControl/FanControl.csproj" />
+  <Project Path="PerformanceOverlay/PerformanceOverlay.csproj" />
+  <Project Path="PowerControl/PowerControl.csproj" />
+  <Project Path="SteamController/SteamController.csproj" />
+  <Project Path="Updater/Updater.csproj" />
+</Solution>

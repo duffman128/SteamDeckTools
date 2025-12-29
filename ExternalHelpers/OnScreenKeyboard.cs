@@ -25,7 +25,7 @@ namespace ExternalHelpers
                 var instance = (ITipInvocation?)Activator.CreateInstance(type);
                 if (instance is null)
                     return false;
-                instance?.Toggle(GetDesktopWindow());
+                instance.Toggle(GetDesktopWindow());
                 Marshal.ReleaseComObject(instance);
                 return true;
             }
